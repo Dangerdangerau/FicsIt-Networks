@@ -27,7 +27,7 @@ void UFIVSNode_SignalEvent::GetNodeActions(TArray<FFIVSNodeAction>& Actions) con
 				Action.Pins.Add(FFIVSFullPinType(FIVS_PIN_DATA_OUTPUT, FFIVSPinDataType(Property)));
 			}
 			Action.OnExecute.BindLambda([InSignal](UFIVSNode* Node) {
-				Cast<UFIVSNode_SignalEvent>(Node)->Signal = InSignal;
+				Cast<UFIVSNode_SignalEvent>(Node)->SetSignal(InSignal);
 			});
 			Actions.Add(Action);
 		}
