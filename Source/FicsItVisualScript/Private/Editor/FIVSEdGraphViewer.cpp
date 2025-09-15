@@ -35,6 +35,7 @@ FVector2D FFIVSEdConnectionDrawer::GetAndCachePinPosition(const TSharedRef<SFIVS
 }
 
 void FFIVSEdConnectionDrawer::DrawConnection(FConnectionPoint Start, FConnectionPoint End, TSharedRef<const SFIVSEdGraphViewer> Graph, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32 LayerId) {
+	bool bShouldSwitch = false;
 	if (Start.Pin && End.Pin) {
 		bool is1Wild = false;
 		if (Start.Pin) {
@@ -45,7 +46,6 @@ void FFIVSEdConnectionDrawer::DrawConnection(FConnectionPoint Start, FConnection
 			is2Wild = !!Cast<UFIVSWildcardPin>(End.Pin->GetPin());
 		}
 
-		bool bShouldSwitch = false;
 		if (is1Wild) {
 			if (is2Wild) {
 				bool bHasInput = false;
@@ -66,11 +66,15 @@ void FFIVSEdConnectionDrawer::DrawConnection(FConnectionPoint Start, FConnection
 		} else if (!(Start.Pin->GetPin()->GetPinType() & FIVS_PIN_OUTPUT)) {
 			bShouldSwitch = true;
 		}
-		if (bShouldSwitch) {
-			FConnectionPoint Connection = Start;
-			Start = End;
-			End = Connection;
+	} else if (Start.Pin) {
+		if (!(Start.Pin->GetPin()->GetPinType() & FIVS_PIN_OUTPUT)) {
+			bShouldSwitch = true;
 		}
+	}
+	if (bShouldSwitch) {
+		FConnectionPoint Connection = Start;
+		Start = End;
+		End = Connection;
 	}
 
 	if (Start.Pin) Start.Position = Graph->GraphToLocal(GetAndCachePinPosition(Start.Pin.ToSharedRef(), Graph, AllottedGeometry));
