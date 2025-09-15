@@ -687,12 +687,15 @@ void SFIVSEdGraphViewer::DrawGrid(uint32 LayerId, const FGeometry& AllottedGeome
 	FVector2D GraphMax = LocalToGraph(LocalSize);
 	FVector2D VisibleGraphSize = GraphMax - GraphMin;
 
-	double minGraphStep = 50;
+	int graphStepCountBase = 30;
+	double minGraphStep = 20;
 	double base = 2;
-	double majorStep = 10;
+	double majorStep = 4;
 	double GraphStep;
-	GraphStep = FMath::Pow(base, FMath::Floor(FMath::LogX(base, VisibleGraphSize.X / minGraphStep)));
-	GraphStep = FMath::Min(GraphStep, FMath::Pow(base, FMath::Floor(FMath::LogX(base, VisibleGraphSize.Y / minGraphStep))));
+	GraphStep = FMath::Pow(base, FMath::Floor(FMath::LogX(base, VisibleGraphSize.X / minGraphStep / graphStepCountBase)));
+	GraphStep = FMath::Min(GraphStep, FMath::Pow(base, FMath::Floor(FMath::LogX(base, VisibleGraphSize.Y / minGraphStep / graphStepCountBase))));
+	double factor = FMath::Max(GraphStep, 1);
+	GraphStep = minGraphStep * factor;
 
 	for (float x = FMath::RoundUpToClosestMultiple(GraphMin.X, GraphStep); x <= GraphMax.X; x += GraphStep) {
 		bool bIsMajor = FMath::IsNearlyZero(FMath::Fmod(x, GraphStep * majorStep));
