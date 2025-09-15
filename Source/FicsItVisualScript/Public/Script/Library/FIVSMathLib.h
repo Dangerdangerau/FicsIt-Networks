@@ -64,7 +64,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Float_EqualTo, "Equals (float)", "==", "Checks if two value are the same", "Math|float")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
-	FIVSNode_LuaGenericPin("Eq" , "Eq", FIVS_PIN_DATA_OUTPUT, FIR_FLOAT)
+	FIVSNode_LuaGenericPin("Eq" , "Eq", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 
 	UFUNCTION()
@@ -77,7 +77,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Float_UnequalTo, "Unequal (float)", "!=", "Checks if two value are not the same", "Math|float")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
-	FIVSNode_LuaGenericPin("NEq" , "NEq", FIVS_PIN_DATA_OUTPUT, FIR_FLOAT)
+	FIVSNode_LuaGenericPin("NEq" , "NEq", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Float_UnequalTo(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* NEq) {
@@ -89,7 +89,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Float_LargerThan, "Greater Than (float)", ">", "Checks if the first value is greater than the second value", "Math|float")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
-	FIVSNode_LuaGenericPin("GT" , "GT", FIVS_PIN_DATA_OUTPUT, FIR_FLOAT)
+	FIVSNode_LuaGenericPin("GT" , "GT", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Float_LargerThan(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* GT) {
@@ -101,7 +101,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Float_LargerOrEqual, "Greater Than or Equal To (float)", ">=", "Checks if the first value is greater than or equal to the second value", "Math|float")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
-	FIVSNode_LuaGenericPin("GTEq" , "GTEq", FIVS_PIN_DATA_OUTPUT, FIR_FLOAT)
+	FIVSNode_LuaGenericPin("GTEq" , "GTEq", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Float_LargerOrEqual(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* GTEq) {
@@ -113,7 +113,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Float_SmallerThan, "Less Than (float)", ">=", "Checks if the first value is less than the second value", "Math|float")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
-	FIVSNode_LuaGenericPin("LT" , "LT", FIVS_PIN_DATA_OUTPUT, FIR_FLOAT)
+	FIVSNode_LuaGenericPin("LT" , "LT", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Float_SmallerThan(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* LT) {
@@ -125,7 +125,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Float_SmallerOrEqual, "Less Than or Equal To (float)", "<=", "Checks if the first value is less than or equal to the second value", "Math|float")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_FLOAT)
-	FIVSNode_LuaGenericPin("LTEq" , "LTEq", FIVS_PIN_DATA_OUTPUT, FIR_FLOAT)
+	FIVSNode_LuaGenericPin("LTEq" , "LTEq", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Float_SmallerOrEqual(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* LTEq) {
@@ -317,7 +317,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Int_EqualTo, "Equals (int)", "==", "Checks if two value are the same", "Math|int")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_INT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_INT)
-	FIVSNode_LuaGenericPin("Eq" , "Eq", FIVS_PIN_DATA_OUTPUT, FIR_INT)
+	FIVSNode_LuaGenericPin("Eq" , "Eq", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Int_EqualTo(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* Eq) {
@@ -329,7 +329,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Int_UnequalTo, "Unequal (int)", "!=", "Checks if two value are not the same", "Math|int")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_INT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_INT)
-	FIVSNode_LuaGenericPin("NEq" , "NEq", FIVS_PIN_DATA_OUTPUT, FIR_INT)
+	FIVSNode_LuaGenericPin("NEq" , "NEq", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Int_UnequalTo(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* NEq) {
@@ -341,7 +341,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Int_LargerThan, "Greater Than (int)", ">", "Checks if the first value is greater than the second value", "Math|int")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_INT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_INT)
-	FIVSNode_LuaGenericPin("GT" , "GT", FIVS_PIN_DATA_OUTPUT, FIR_INT)
+	FIVSNode_LuaGenericPin("GT" , "GT", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Int_LargerThan(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* GT) {
@@ -353,7 +353,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Int_LargerOrEqual, "Greater Than or Equal To (int)", ">=", "Checks if the first value is greater than or equal to the second value", "Math|int")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_INT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_INT)
-	FIVSNode_LuaGenericPin("GTEq" , "GTEq", FIVS_PIN_DATA_OUTPUT, FIR_INT)
+	FIVSNode_LuaGenericPin("GTEq" , "GTEq", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Int_LargerOrEqual(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* GTEq) {
@@ -365,7 +365,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Int_SmallerThan, "Less Than (int)", ">=", "Checks if the first value is less than the second value", "Math|int")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_INT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_INT)
-	FIVSNode_LuaGenericPin("LT" , "LT", FIVS_PIN_DATA_OUTPUT, FIR_INT)
+	FIVSNode_LuaGenericPin("LT" , "LT", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Int_SmallerThan(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* LT) {
@@ -377,7 +377,7 @@ public:
 	FIVSNode_BeginLuaGenericMeta(FIVSFunc_Int_SmallerOrEqual, "Less Than or Equal To (int)", "<=", "Checks if the first value is less than or equal to the second value", "Math|int")
 	FIVSNode_LuaGenericPin("X" , "X", FIVS_PIN_DATA_INPUT, FIR_INT)
 	FIVSNode_LuaGenericPin("Y" , "Y", FIVS_PIN_DATA_INPUT, FIR_INT)
-	FIVSNode_LuaGenericPin("LTEq" , "LTEq", FIVS_PIN_DATA_OUTPUT, FIR_INT)
+	FIVSNode_LuaGenericPin("LTEq" , "LTEq", FIVS_PIN_DATA_OUTPUT, FIR_BOOL)
 	FIVSNode_EndLuaGenericMeta();
 	UFUNCTION()
 	static void FIVSFunc_Int_SmallerOrEqual(UPARAM(ref) FFIVSLuaCompilerContext& Context, UFIVSPin* X, UFIVSPin* Y, UFIVSPin* LTEq) {
