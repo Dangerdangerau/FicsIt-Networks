@@ -665,8 +665,11 @@ void SFIVSEdGraphViewer::OnNodeChanged(EFIVSNodeChange change, UFIVSNode* Node) 
 void SFIVSEdGraphViewer::OnSelectionChanged(UFIVSNode* InNode, bool bIsSelected) {
 	check(IsValid(InNode));
 
-	NodeToChild[InNode]->bSelected = bIsSelected;
-	SelectionChanged.ExecuteIfBound(InNode, bIsSelected);
+	TSharedRef<SFIVSEdNodeViewer>* node = NodeToChild.Find(InNode);
+	if (node) {
+		(*node)->bSelected = bIsSelected;
+		SelectionChanged.ExecuteIfBound(InNode, bIsSelected);
+	}
 }
 
 FSlateClippingZone SFIVSEdGraphViewer::GetClipRect(const FGeometry& AllottedGeometry) const {
