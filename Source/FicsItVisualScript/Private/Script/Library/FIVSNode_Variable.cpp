@@ -43,11 +43,12 @@ void UFIVSNode_Variable::SerializeNodeProperties(const TSharedRef<FJsonObject>& 
 }
 UE_DISABLE_OPTIMIZATION_SHIP
 void UFIVSNode_Variable::DeserializeNodeProperties(const TSharedPtr<FJsonObject>& Properties) {
-	bAssignment = Properties->GetBoolField(TEXT("Assignment"));
+	Properties->TryGetBoolField(TEXT("Assignment"), bAssignment);
 	const TSharedPtr<FJsonObject>& typeObj = Properties->GetObjectField(TEXT("Type"));
 	if (typeObj) {
 		FIVSPinDataTypeFromJsonObject(typeObj.ToSharedRef(), Type);
 	}
+	SetType(Type, bAssignment);
 }
 UE_ENABLE_OPTIMIZATION_SHIP
 
