@@ -66,6 +66,21 @@ void FFIVSEdConnectionDrawer::DrawConnection(FConnectionPoint Start, FConnection
 		} else if (!(Start.Pin->GetPin()->GetPinType() & FIVS_PIN_OUTPUT)) {
 			bShouldSwitch = true;
 		}
+
+		/*UFIVSPin* startNext = Start.Pin->GetPin()->FindNextConnected((Start.Pin->GetPin()->GetPinType() & FIVS_PIN_DATA) != 0 ? FIVS_PIN_OUTPUT : FIVS_PIN_INPUT);
+		if (startNext == End.Pin->GetPin()) {
+			if (End.Pin->GetPin()->ParentNode->Pos.X < Start.Pin->GetPin()->ParentNode->Pos.X) {
+				allLeftOrRight = true;
+			}
+		}
+		UFIVSPin* endNext = End.Pin->GetPin()->FindNextConnected((End.Pin->GetPin()->GetPinType() & FIVS_PIN_DATA) != 0 ? FIVS_PIN_OUTPUT : FIVS_PIN_INPUT);
+		if (startNext && endNext) {
+			bool startLeftOrigin = startNext->ParentNode->Pos.X > Start.Pin->GetPin()->ParentNode->Pos.X;
+			bool endLeftTarget = endNext->ParentNode->Pos.X > End.Pin->GetPin()->ParentNode->Pos.X;
+			if (startLeftOrigin == endLeftTarget) {
+				allLeftOrRight = startLeftOrigin;
+			}
+		}*/
 	} else if (Start.Pin) {
 		if (!(Start.Pin->GetPin()->GetPinType() & FIVS_PIN_OUTPUT)) {
 			bShouldSwitch = true;
