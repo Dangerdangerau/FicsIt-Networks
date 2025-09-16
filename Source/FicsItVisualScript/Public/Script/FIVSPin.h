@@ -171,18 +171,28 @@ public:
 	 */
 	void RemoveConnection(UFIVSPin* Pin);
 
-	void GetAllConnected(TArray<UFIVSPin*>& Searches);
-	TArray<UFIVSPin*> GetAllConnected() {
-		TArray<UFIVSPin*> Connected;
-		GetAllConnected(Connected);
+	bool VisitAllConnected(TSet<UFIVSPin*>& Searches, TFunction<bool(UFIVSPin*)> Callback);
+	bool VisitAllConnected(TFunction<bool(UFIVSPin*)> Callback) {
+		TSet<UFIVSPin*> Searches;
+		return VisitAllConnected(Searches, Callback);
+	}
+	TSet<UFIVSPin*> GetAllConnected() {
+		TSet<UFIVSPin*> Connected;
+		VisitAllConnected(Connected, [](UFIVSPin*){ return true; });
 		return Connected;
 	}
+
 
 	/**
 	 * Trys to find the data-source for the network of pins this pin is connected to,
 	 * or in the case of exec pins, trys to find the next Exec-Pin.
 	 * */
 	UFIVSPin* FindConnected();
+
+	/**
+	 * Trys to find the pin connected to this pin that eventually leads to the pin with the given type.
+	 */
+	UFIVSPin* FindNextConnected(EFIVSPinType PinType);
 
 	/**
 	 * Removes all connections of this pin

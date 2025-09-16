@@ -1,21 +1,42 @@
 ﻿#include "Script/FIVSPin.h"
 
 
-void UFIVSPin::GetAllConnected(TArray<UFIVSPin*>& Searches) {
-	if (Searches.Contains(this)) return;
+bool UFIVSPin::VisitAllConnected(TSet<UFIVSPin*>& Searches, TFunction<bool(UFIVSPin*)> Callback) {
+	if (Searches.Contains(this)) return true;
 	Searches.Add(this);
+	if (!Callback(this)) return false;
 	for (UFIVSPin* Pin : GetConnections()) {
-		Pin->GetAllConnected(Searches);
+		if (!Pin->VisitAllConnected(Searches, Callback)) {
+			return false;
+		}
 	}
+	return true;
 }
 
 UFIVSPin* UFIVSPin::FindConnected() {
 	EFIVSPinType PinType = (GetPinType() & FIVS_PIN_DATA) != 0 ? FIVS_PIN_OUTPUT : FIVS_PIN_INPUT;
 	for (UFIVSPin* Pin : GetAllConnected()) {
 		if (Pin->IsA<UFIVSWildcardPin>()) continue;
-		if ((Pin->GetPinType() & PinType) > 0) return Pin;
+		if (Pin->GetPinType() & PinType) return Pin;
 	}
 	return nullptr;
+}
+
+UFIVSPin* UFIVSPin::FindNextConnected(EFIVSPinType PinType) {
+	UFIVSPin* NextPin = nullptr;
+	for (UFIVSPin* connection : GetConnections()) {
+		TSet<UFIVSPin*> Searches{this};
+		connection->VisitAllConnected(Searches, [&](UFIVSPin* Pin) {
+			if (Pin->IsA<UFIVSWildcardPin>()) return true;
+			if ((Pin->GetPinType() & PinType) == PinType) {
+				NextPin = Pin;
+				return false;
+			}
+			return true;
+		});
+		if (NextPin) break;
+	}
+	return NextPin;
 }
 
 void UFIVSPin::AddConnection(UFIVSPin* Pin) {
@@ -93,28 +114,26 @@ bool UFIVSPin::CanConnect(UFIVSPin* Pin) {
 	bool bPinHasInput = false;
 	bool bThisHasOutput = false;
 	bool bPinHasOutput = false;
-	TArray<UFIVSPin*> Connections;
-	OutputPin->GetAllConnected(Connections);
-	for (UFIVSPin* Connection : Connections) {
-		if (Cast<UFIVSWildcardPin>(Connection)) continue;
-		if (Connection->GetPinType() & FIVS_PIN_INPUT) {
+	OutputPin->VisitAllConnected([&](UFIVSPin* Pin) {
+		if (Cast<UFIVSWildcardPin>(Pin)) return true;
+		if (Pin->GetPinType() & FIVS_PIN_INPUT) {
 			bThisHasOutput = true;
 		}
-		if (Connection->GetPinType() & FIVS_PIN_OUTPUT) {
+		if (Pin->GetPinType() & FIVS_PIN_OUTPUT) {
 			bThisHasInput = true;
 		}
-	}
-	Connections.Empty();
-	InputPin->GetAllConnected(Connections);
-	for (UFIVSPin* Connection : Connections) {
-		if (Cast<UFIVSWildcardPin>(Connection)) continue;
-		if (Connection->GetPinType() & FIVS_PIN_INPUT) {
+		return true;
+	});
+	InputPin->VisitAllConnected([&](UFIVSPin* Pin) {
+		if (Cast<UFIVSWildcardPin>(Pin)) return true;
+		if (Pin->GetPinType() & FIVS_PIN_INPUT) {
 			bPinHasOutput = true;
 		}
-		if (Connection->GetPinType() & FIVS_PIN_OUTPUT) {
+		if (Pin->GetPinType() & FIVS_PIN_OUTPUT) {
 			bPinHasInput = true;
 		}
-	}
+		return true;
+	});
 
 	if (OutputPinType & FIVS_PIN_DATA) {
 		if (bThisHasInput && bPinHasInput) return false;
@@ -150,8 +169,7 @@ UFIVSGenericPin* UFIVSGenericPin::Create(FFIVSPinDataType DataType, EFIVSPinType
 }
 
 EFIVSPinType UFIVSWildcardPin::GetPinType() {
-	TArray<UFIVSPin*> Connected;
-	GetAllConnected(Connected);
+	TSet<UFIVSPin*> Connected = GetAllConnected();
 	EFIVSPinType Type = (EFIVSPinType)(FIVS_PIN_EXEC | FIVS_PIN_DATA);
 	for (UFIVSPin* Pin : Connected) {
 		if (Cast<UFIVSWildcardPin>(Pin)) continue;
@@ -173,14 +191,12 @@ EFIVSPinType UFIVSWildcardPin::GetPinType() {
 }
 
 FFIVSPinDataType UFIVSWildcardPin::GetPinDataType() {
-	TArray<UFIVSPin*> Connected;
-	GetAllConnected(Connected);
 	FFIVSPinDataType Type = FFIVSPinDataType(FFIRExtendedValueType(FIR_ANY));
-	for (UFIVSPin* Pin : Connected) {
-		if (Cast<UFIVSWildcardPin>(Pin)) continue;
+	VisitAllConnected([&](UFIVSPin* Pin) {
+		if (Cast<UFIVSWildcardPin>(Pin)) return true;
 		Type = Pin->GetPinDataType();
-		break;
-	}
+		return false;
+	});
 	return Type;
 }
 
