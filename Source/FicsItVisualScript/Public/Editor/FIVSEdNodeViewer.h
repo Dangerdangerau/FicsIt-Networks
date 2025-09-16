@@ -35,6 +35,8 @@ public:
 	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 	virtual FReply OnDragDetected(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 	virtual FReply OnDrop(const FGeometry& MyGeometry, const FDragDropEvent& DragDropEvent) override;
+	virtual void OnDragEnter(const FGeometry& MyGeometry, const FDragDropEvent& DragDropEvent) override;
+	virtual void OnDragLeave(const FDragDropEvent& DragDropEvent) override;
 	// End SWidget
 	
 	FSlateColor GetPinColor() const;
@@ -66,6 +68,7 @@ public:
 	FFIVSEdPinConnectDragDrop(TSharedRef<SFIVSEdPinViewer> Pin);
 
 	virtual void OnDrop(bool bDropWasHandled, const FPointerEvent& MouseEvent) override;
+	virtual void OnDragged(const FDragDropEvent& DragDropEvent) override;
 
 	TSharedRef<SFIVSEdPinViewer> GetPinViewer() { return Pin; }
 

@@ -211,6 +211,24 @@ FReply SFIVSEdPinViewer::OnDrop(const FGeometry& MyGeometry, const FDragDropEven
 	return SCompoundWidget::OnDrop(MyGeometry, DragDropEvent);
 }
 
+void SFIVSEdPinViewer::OnDragEnter(const FGeometry& MyGeometry, const FDragDropEvent& DragDropEvent) {
+	SCompoundWidget::OnDragEnter(MyGeometry, DragDropEvent);
+	if (auto op = DragDropEvent.GetOperationAs<FFIVSEdPinConnectDragDrop>()) {
+		if (GetNodeViewer()->GetGraphViewer()->DraggingPinsEndpoint) {
+			GetNodeViewer()->GetGraphViewer()->DraggingPinsEndpoint->Pin = SharedThis(this);
+		}
+	}
+}
+
+void SFIVSEdPinViewer::OnDragLeave(const FDragDropEvent& DragDropEvent) {
+	SCompoundWidget::OnDragLeave(DragDropEvent);
+	if (auto op = DragDropEvent.GetOperationAs<FFIVSEdPinConnectDragDrop>()) {
+		if (GetNodeViewer()->GetGraphViewer()->DraggingPinsEndpoint) {
+			GetNodeViewer()->GetGraphViewer()->DraggingPinsEndpoint->Pin.Reset();
+		}
+	}
+}
+
 FSlateColor SFIVSEdPinViewer::GetPinColor() const {
 	if (Pin->GetPinType() & FIVS_PIN_DATA) {
 		switch (Pin->GetPinDataType().GetType()) {
@@ -240,11 +258,23 @@ FVector2D SFIVSEdPinViewer::GetConnectionPoint() const {
 
 FFIVSEdPinConnectDragDrop::FFIVSEdPinConnectDragDrop(TSharedRef<SFIVSEdPinViewer> InPin) : Pin(InPin) {
 	Pin->GetNodeViewer()->GetGraphViewer()->BeginDragPin(Pin);
+	Pin->GetNodeViewer()->GetGraphViewer()->DraggingPinsEndpoint = FFIVSEdConnectionDrawer::FConnectionPoint(Pin->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D::Zero()));
 }
 
 void FFIVSEdPinConnectDragDrop::OnDrop(bool bDropWasHandled, const FPointerEvent& MouseEvent) {
 	FDragDropOperation::OnDrop(bDropWasHandled, MouseEvent);
 	Pin->GetNodeViewer()->GetGraphViewer()->EndDragPin(Pin);
+}
+
+void FFIVSEdPinConnectDragDrop::OnDragged(const FDragDropEvent& DragDropEvent) {
+	FDragDropOperation::OnDragged(DragDropEvent);
+
+	auto pos = Pin->GetNodeViewer()->GetGraphViewer()->GetCachedGeometry().AbsoluteToLocal(DragDropEvent.GetScreenSpacePosition());
+	if (Pin->GetNodeViewer()->GetGraphViewer()->DraggingPinsEndpoint) {
+		Pin->GetNodeViewer()->GetGraphViewer()->DraggingPinsEndpoint->Position = pos;
+	} else {
+		Pin->GetNodeViewer()->GetGraphViewer()->DraggingPinsEndpoint = FFIVSEdConnectionDrawer::FConnectionPoint(pos);
+	}
 }
 
 TSharedRef<SBorder> SFIVSEdNodeViewer::Construct(const TSharedRef<SFIVSEdGraphViewer>& InGraphViewer, UFIVSNode* InNode, const FFIVSEdNodeStyle* InStyle) {

@@ -13,7 +13,6 @@
 
 #define LOCTEXT_NAMESPACE "FIVSEdGraphViewerModule"
 
-
 void FFIVSEdConnectionDrawer::Reset() {
 	ConnectionUnderMouse.Reset();
 	LastConnectionDistance = FLT_MAX;
@@ -35,6 +34,7 @@ FVector2D FFIVSEdConnectionDrawer::GetAndCachePinPosition(const TSharedRef<SFIVS
 }
 
 void FFIVSEdConnectionDrawer::DrawConnection(FConnectionPoint Start, FConnectionPoint End, TSharedRef<const SFIVSEdGraphViewer> Graph, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32 LayerId) {
+	TOptional<bool> allLeftOrRight;
 	bool bShouldSwitch = false;
 	if (Start.Pin && End.Pin) {
 		bool is1Wild = false;
@@ -45,15 +45,15 @@ void FFIVSEdConnectionDrawer::DrawConnection(FConnectionPoint Start, FConnection
 		if (End.Pin) {
 			is2Wild = !!Cast<UFIVSWildcardPin>(End.Pin->GetPin());
 		}
+		bool hasInput1 = false;
 
 		if (is1Wild) {
 			if (is2Wild) {
-				bool bHasInput = false;
 				for (UFIVSPin* Con : Start.Pin->GetPin()->GetConnections()) if (Con->GetPinType() & FIVS_PIN_INPUT) {
-					bHasInput = true;
+					hasInput1 = true;
 					break;
 				}
-				if (Start.Pin->GetPin()->ParentNode->Pos.X > End.Pin->GetPin()->ParentNode->Pos.X && bHasInput) {
+				if (Start.Pin->GetPin()->ParentNode->Pos.X > End.Pin->GetPin()->ParentNode->Pos.X && hasInput1) {
 					bShouldSwitch = true;
 				}
 			} else if (!(End.Pin->GetPin()->GetPinType() & FIVS_PIN_INPUT)) {
@@ -78,15 +78,18 @@ void FFIVSEdConnectionDrawer::DrawConnection(FConnectionPoint Start, FConnection
 	}
 
 	if (Start.Pin) Start.Position = Graph->GraphToLocal(GetAndCachePinPosition(Start.Pin.ToSharedRef(), Graph, AllottedGeometry));
-	FVector2D StartLoc = Start.Position;
 	if (End.Pin) End.Position = Graph->GraphToLocal(GetAndCachePinPosition(End.Pin.ToSharedRef(), Graph, AllottedGeometry));
-	FVector2D EndLoc = End.Position;
 
 	FLinearColor color = FColor::White;
 	if (Start.Pin) color = Start.Pin->GetPinColor().GetSpecifiedColor();
 	else if (End.Pin) color = End.Pin->GetPinColor().GetSpecifiedColor();
 
-	DrawConnection_Internal(StartLoc, EndLoc, color, Graph, AllottedGeometry, OutDrawElements, LayerId);
+	if (allLeftOrRight) {
+		Start.OverwriteLeftOrRight = *allLeftOrRight;
+		End.OverwriteLeftOrRight = *allLeftOrRight;
+	}
+
+	DrawConnection_Internal(Start, End, color, Graph, AllottedGeometry, OutDrawElements, LayerId);
 	if (Start.Pin && End.Pin) {
 		CheckMousePosition_Internal(Start, End, Graph);
 	}
@@ -113,6 +116,14 @@ TTuple<FVector2D, FVector2D> FFIVSEdConnectionDrawer_Splines::GetSplinePoints(co
 
 	double offset = FMath::Min(FVector2D::Distance(End.Position, Start.Position), (bGoingForward ? 1000 : 200) * Graph->Zoom * Graph->Zoom);
 
+	bool startLeft = Start.OverwriteLeftOrRight.Get(false);
+	bool endLeft = End.OverwriteLeftOrRight.Get(true);
+	if (startLeft && endLeft) {
+		return {FVector2D(-offset, 0), FVector2D(offset, 0)};
+	}
+	if (!startLeft && !endLeft) {
+		return {FVector2D(offset, 0), FVector2D(-offset, 0)};
+	}
 	return {FVector2D(offset, 0), FVector2D(offset, 0)};
 }
 
@@ -477,11 +488,6 @@ FReply SFIVSEdGraphViewer::OnDragDetected(const FGeometry& MyGeometry, const FPo
 }
 
 FReply SFIVSEdGraphViewer::OnDragOver(const FGeometry& MyGeometry, const FDragDropEvent& DragDropEvent) {
-	if (DragDropEvent.GetOperationAs<FFIVSEdPinConnectDragDrop>()) {
-		DraggingPinsEndpoint = DragDropEvent.GetScreenSpacePosition();
-		return FReply::Handled();
-	}
-
 	return FReply::Unhandled();
 }
 
@@ -747,9 +753,9 @@ void SFIVSEdGraphViewer::DrawConnections(uint32 LayerId, const FGeometry& Allott
 }
 
 void SFIVSEdGraphViewer::DrawNewConnection(uint32 LayerId, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, const FWidgetStyle& InWidgetStyle) const {
+	if (!DraggingPinsEndpoint) return;
 	for (TSharedRef<SFIVSEdPinViewer> DraggingPin : DraggingPins) {
-		FVector2D EndLoc = GetCachedGeometry().AbsoluteToLocal(DraggingPinsEndpoint);
-		ConnectionDrawer->DrawConnection(DraggingPin, EndLoc, SharedThis(this), AllottedGeometry, OutDrawElements, LayerId);
+		ConnectionDrawer->DrawConnection(FFIVSEdConnectionDrawer::FConnectionPoint(DraggingPin), *DraggingPinsEndpoint, SharedThis(this), AllottedGeometry, OutDrawElements, LayerId);
 	}
 }
 

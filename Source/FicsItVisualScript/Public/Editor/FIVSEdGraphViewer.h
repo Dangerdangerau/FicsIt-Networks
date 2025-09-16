@@ -16,6 +16,7 @@ struct FFIVSEdConnectionDrawer {
 	struct FConnectionPoint {
 		FVector2D Position;
 		TSharedPtr<SFIVSEdPinViewer> Pin;
+		TOptional<bool> OverwriteLeftOrRight;
 
 		FConnectionPoint(const FVector2D& Position) : Position(Position) {}
 		FConnectionPoint(TSharedRef<SFIVSEdPinViewer> Pin) : Pin(Pin) {}
@@ -192,14 +193,14 @@ private:
 	TSlotlessChildren<SFIVSEdNodeViewer> Children;
 	TMap<UFIVSNode*, TSharedRef<SFIVSEdNodeViewer>> NodeToChild;
 
-	TArray<TSharedRef<SFIVSEdPinViewer>> DraggingPins;
-	FVector2D DraggingPinsEndpoint;
-
 	TSharedPtr<FFIVSEdConnectionDrawer> ConnectionDrawer;
 
 	TSharedPtr<SFIVSEdActionSelection> ActiveActionSelection;
 
 public:
+	TArray<TSharedRef<SFIVSEdPinViewer>> DraggingPins;
+	TOptional<FFIVSEdConnectionDrawer::FConnectionPoint> DraggingPinsEndpoint;
+
 	FFIVSEdSelectionManager SelectionManager;
 	FFIVSEdSelectionBoxHandler SelectionBoxHandler;
 
@@ -236,6 +237,7 @@ public:
 
 	void EndDragPin(TSharedRef<SFIVSEdPinViewer> PinViewer) {
 		DraggingPins.Remove(PinViewer);
+		DraggingPinsEndpoint.Reset();
 	}
 
 	float GetZoom() const {
