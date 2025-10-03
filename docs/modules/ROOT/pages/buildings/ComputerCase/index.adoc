@@ -32,7 +32,7 @@ You need exactly one processor for the computer case to work.
 Computer modules provide different additional features to a computer. +
 A CPU f.e. decides how the computer will process data and what kind of xref:items/EEPROM.adoc[EEPROMs] are allowed.
 Multiple xref:buildings/ComputerCase/RAM.adoc[RAM modules] can be used to increase the internal memory of the computer. +
-The computer case provides a slot places wer you can place these modules with the build gun.
+The computer case provides slots where you can place these modules with the build gun.
 You can freely arrange these modules and fully customize your computer this way.
 
 == CPUs
